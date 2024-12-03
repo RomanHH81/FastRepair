@@ -1,18 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import ReactStars from "react-stars";
-import { Box, Text, Flex } from "@radix-ui/themes";
-import { ContentSection } from "@/app/components/ContentSection/ContentSection";
-
-interface Review {
-  author_name: string;
-  rating: number;
-  text: string;
-}
+import { useState, useEffect } from "react";
 
 const GoogleReviews = () => {
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,7 +15,8 @@ const GoogleReviews = () => {
         } else {
           setError("Keine Bewertungen gefunden.");
         }
-      } catch (error) {
+      } catch (fetchError: unknown) {
+        console.error("Fehler beim Laden der Bewertungen:", fetchError);
         setError("Fehler beim Laden der Bewertungen");
       }
     };
@@ -35,64 +25,18 @@ const GoogleReviews = () => {
   }, []);
 
   if (error) {
-    return <div>{error}</div>;
+    return <div>{error}</div>; // Zeigt die Fehlermeldung an
   }
 
   return (
-    <ContentSection id="reviews">
-      <Box as="div">
-        <Text>
-          <h3>Das sagen die Kunden</h3>
-        </Text>
-      </Box>
-      <Flex
-        direction={{
-          initial: "column", // Für kleine Bildschirme (unter 768px): Elemente untereinander
-          md: "row", // Ab 768px (md-Breakpoint): Elemente nebeneinander
-        }}
-        gap="4"
-        style={{
-          flexWrap: "wrap", // Umbruch bei Platzmangel
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
+    <div>
+      <h1>Google Reviews</h1>
+      <ul>
         {reviews.map((review, index) => (
-          <Box
-            as="div"
-            key={index}
-            style={{
-              flex: "1 1 calc(33.33% - 16px)", // Ab md: drei Spalten nebeneinander
-              listStyle: "none",
-              padding: "8px",
-              boxSizing: "border-box",
-            }}
-          >
-            <Box
-              as="div"
-              style={{
-                padding: "16px",
-                borderRadius: "8px",
-                background: "var(--imageframe)",
-                boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <strong>{review.author_name}</strong>
-              <Box as="div" style={{ margin: "8px 0" }}>
-                <ReactStars
-                  count={5}
-                  value={review.rating}
-                  size={24}
-                  color2={"#ffd700"}
-                  edit={false}
-                />
-              </Box>
-              <p>{review.text}</p>
-            </Box>
-          </Box>
+          <li key={index}>{review}</li> // Hier sollten die Bewertungen korrekt angezeigt werden
         ))}
-      </Flex>
-    </ContentSection>
+      </ul>
+    </div>
   );
 };
 

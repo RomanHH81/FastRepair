@@ -1,5 +1,5 @@
 // src/app/api/data/route.js
-export async function GET(req) {
+export async function GET() {
   const apiKey = "AIzaSyCIw1kLaRxelEshUMfw0ivkwT8aLVwQHh0"; // Dein Google API-Schlüssel
   const placeId = "ChIJH6xNIznvsUcRbOgv_VagIUI"; // Die richtige Place ID von Fast Repair
 
