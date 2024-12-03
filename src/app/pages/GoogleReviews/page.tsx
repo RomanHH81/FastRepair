@@ -1,9 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import ReactStars from "react-stars";
+import { Box, Text, Flex } from "@radix-ui/themes";
+import { ContentSection } from "@/app/components/ContentSection/ContentSection";
+
+interface Review {
+  id: string;
+  author_name: string;
+  rating: number;
+  text: string;
+}
 
 const GoogleReviews = () => {
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -17,8 +27,8 @@ const GoogleReviews = () => {
         } else {
           setError("Keine Bewertungen gefunden.");
         }
-      } catch (fetchError: unknown) {
-        console.error("Fehler beim Laden der Bewertungen:", fetchError);
+      } catch (error: unknown) {
+        console.error("Fehler beim Laden der Bewertungen:", error);
         setError("Fehler beim Laden der Bewertungen");
       }
     };
@@ -27,18 +37,64 @@ const GoogleReviews = () => {
   }, []);
 
   if (error) {
-    return <div>{error}</div>; // Zeigt die Fehlermeldung an
+    return <div>{error}</div>;
   }
 
   return (
-    <div>
-      <h1>Google Reviews</h1>
-      <ul>
-        {reviews.map((review, index) => (
-          <li key={index}>{review}</li> // Hier sollten die Bewertungen korrekt angezeigt werden
+    <ContentSection id="reviews">
+      <Box as="div">
+        <Text>
+          <h3>Das sagen die Kunden</h3>
+        </Text>
+      </Box>
+      <Flex
+        direction={{
+          initial: "column", // Für kleine Bildschirme (unter 768px): Elemente untereinander
+          md: "row", // Ab 768px (md-Breakpoint): Elemente nebeneinander
+        }}
+        gap="4"
+        style={{
+          flexWrap: "wrap", // Umbruch bei Platzmangel
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        {reviews.map((review) => (
+          <Box
+            as="div"
+            key={review.id || review.author_name} // Eindeutige Schlüssel verwenden
+            style={{
+              flex: "1 1 calc(33.33% - 16px)", // Ab md: drei Spalten nebeneinander
+              listStyle: "none",
+              padding: "8px",
+              boxSizing: "border-box",
+            }}
+          >
+            <Box
+              as="div"
+              style={{
+                padding: "16px",
+                borderRadius: "8px",
+                background: "var(--imageframe)",
+                boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <strong>{review.author_name}</strong>
+              <Box as="div" style={{ margin: "8px 0" }}>
+                <ReactStars
+                  count={5}
+                  value={review.rating}
+                  size={24}
+                  color2={"#ffd700"}
+                  edit={false}
+                />
+              </Box>
+              <p>{review.text}</p>
+            </Box>
+          </Box>
         ))}
-      </ul>
-    </div>
+      </Flex>
+    </ContentSection>
   );
 };
 
